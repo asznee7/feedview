@@ -1,0 +1,22 @@
+.app {
+  width: 100vw;
+  height: 100vh;
+  padding: 2em;
+}
+
+.form > * {
+  margin-right: 1em !important;
+  margin-bottom: 2em !important;
+}
+
+.newsContainer {
+  display: flex;
+  flex-direction: row;
+  flex-wrap: wrap;
+  /* transform: scale(0.75); */
+}
+
+.content {
+  display: grid;
+  grid-template-columns: 1fr 1fr 1fr;
+}
