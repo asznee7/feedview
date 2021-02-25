@@ -34,7 +34,7 @@ interface GlobalStatsProps {
 
 function GlobalStats({ articles, tweets }: GlobalStatsProps) {
   const classes = useStyles();
-  const { lastUpdated } = useStore((store) => store);
+  const { lastUpdatedTwitter, lastUpdatedNews } = useStore((store) => store);
 
   return (
     <Card>
@@ -51,7 +51,7 @@ function GlobalStats({ articles, tweets }: GlobalStatsProps) {
           <ListItem>
             <ListItemText
               primary={
-                <LastUpdated lastUpdated={lastUpdated} variant='body1' />
+                <LastUpdated lastUpdated={lastUpdatedNews} variant='body1' />
               }
               secondary='Last update'
             />
@@ -67,7 +67,7 @@ function GlobalStats({ articles, tweets }: GlobalStatsProps) {
               primary={`${getTotalSentiment(articles)} (${getAverageSentiment(
                 articles,
               )})`}
-              secondary='Average sentiment'
+              secondary='Sentiment'
             />
           </ListItem>
           <Divider variant='inset' component='li' />
@@ -82,7 +82,7 @@ function GlobalStats({ articles, tweets }: GlobalStatsProps) {
           <ListItem>
             <ListItemText
               primary={
-                <LastUpdated lastUpdated={lastUpdated} variant='body1' />
+                <LastUpdated lastUpdated={lastUpdatedTwitter} variant='body1' />
               }
               secondary='Last update'
             />
@@ -95,13 +95,13 @@ function GlobalStats({ articles, tweets }: GlobalStatsProps) {
               primary={`${getTotalSentiment(tweets)} (${getAverageSentiment(
                 tweets,
               )})`}
-              secondary='Average sentiment'
+              secondary='Sentiment'
             />
           </ListItem>
           <ListItem>
             <ListItemText
               primary={getAverageEngagement(tweets)}
-              secondary='Average engagement'
+              secondary='Engagement'
             />
           </ListItem>
           <Divider variant='inset' component='li' />
@@ -114,7 +114,13 @@ function GlobalStats({ articles, tweets }: GlobalStatsProps) {
             <ListItemText primary='Total' />
           </ListItem>
           <ListItem>
-            <ListItemText primary='Sentiment' secondary='Sentiment' />
+            <ListItemText
+              primary={`${getTotalSentiment([
+                ...tweets,
+                ...articles,
+              ])} (${getAverageSentiment([...tweets, ...articles])})`}
+              secondary='Sentiment'
+            />
           </ListItem>
         </List>
       </div>

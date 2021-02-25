@@ -6,12 +6,12 @@ interface AppStore extends State {
   query: string;
   news: NewsEntity[];
   tweets: TweetEntity[],
-  lastUpdated: string | null;
+  lastUpdatedNews: string | null;
+  lastUpdatedTwitter: string | null;
   getQuery: () => string;
   setQuery: (q: string) => void;
   setNews: (news: NewsEntity[]) => void;
   setTweets: (tweets: TweetEntity[]) => void;
-  setLastUpdated: (date: string) => void;
 }
 
 const useStore = create<AppStore>(
@@ -21,12 +21,12 @@ const useStore = create<AppStore>(
         query: '',
         news: [],
         tweets: [],
-        lastUpdated: null,
+        lastUpdatedNews: null,
+        lastUpdatedTwitter: null,
         getQuery: () => get()?.query,
         setQuery: (query: string) => set({ query }),
-        setNews: (news) => set({ news, lastUpdated: new Date().toISOString() }),
-        setTweets: (tweets) => set({ tweets, lastUpdated: new Date().toISOString() }),
-        setLastUpdated: (date) => set({ lastUpdated: date }),
+        setNews: (news) => set({ news, lastUpdatedNews: new Date().toISOString() }),
+        setTweets: (tweets) => set({ tweets, lastUpdatedTwitter: new Date().toISOString() }),
       };
     },
     { name: 'app-storage' },
