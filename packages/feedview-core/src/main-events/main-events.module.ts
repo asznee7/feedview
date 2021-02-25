@@ -4,6 +4,7 @@ import { MainEventsGateway } from './main-events.gateway';
 import { ConfigService } from '@nestjs/config';
 import { RedisConfig } from 'src/config/interfaces';
 import { NewsModule } from 'src/news/news.module';
+import { TwitterModule } from 'src/twitter/twitter.module';
 
 @Module({
   providers: [MainEventsGateway],
@@ -21,6 +22,7 @@ import { NewsModule } from 'src/news/news.module';
       },
     }),
     NewsModule,
+    TwitterModule,
   ],
 })
 export class MainEvents {}

@@ -1,19 +1,45 @@
-.app {
+.root {
   width: 100vw;
   height: 100vh;
+}
+
+.app {
+  background-color: #f1f1f1;
+}
+
+.header {
+  display: flex;
+  align-items: center;
+  flex-flow: row;
+  justify-content: space-between;
+  padding: 1.5em 4em;
+  background-color: #fff;
+  box-shadow: 0px 2px 1px -1px rgb(0 0 0 / 20%),
+    0px 1px 1px 0px rgb(0 0 0 / 14%), 0px 1px 3px 0px rgb(0 0 0 / 12%);
+}
+
+.logo {
+  display: flex;
+  align-items: center;
+  font-weight: bold;
+}
+
+.logo * {
+  margin-right: 0.5em;
+}
+
+.main {
   padding: 2em;
 }
 
 .form > * {
   margin-right: 1em !important;
-  margin-bottom: 2em !important;
 }
 
 .newsContainer {
   display: flex;
   flex-direction: row;
   flex-wrap: wrap;
-  /* transform: scale(0.75); */
 }
 
 .content {

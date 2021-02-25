@@ -15,7 +15,23 @@ export interface NewsEntity {
   };
 }
 
+export interface TweetEntity {
+  id: string;
+  text: string;
+  created_at: string;
+  author: {
+    id: string;
+    name: string;
+    username: string;
+  };
+  engagement: number;
+  likes: number;
+  sentiment: {
+    score: number;
+  };
+}
+
 export interface IWSMessage<T = any> {
   data: T[];
-  event: 'news';
+  event: 'news' | 'twitter';
 }

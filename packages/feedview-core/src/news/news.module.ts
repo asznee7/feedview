@@ -9,7 +9,6 @@ import { NewsService } from './news.service';
       inject: [ConfigService],
       useFactory: async (configService: ConfigService) => {
         const newsApiConfig = configService.get<NewsApiConfig>('news');
-        console.log('newsApiConfig: ', newsApiConfig);
 
         return {
           baseURL: newsApiConfig.url,

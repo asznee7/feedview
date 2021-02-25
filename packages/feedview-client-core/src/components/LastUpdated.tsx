@@ -1,10 +1,14 @@
 import { Typography } from '@material-ui/core';
+import { Variant } from '@material-ui/core/styles/createTypography';
 import { formatDistanceToNow } from 'date-fns';
 import React, { useCallback, useEffect, useState } from 'react';
-import useStore from '../core/useStore';
 
-function LastUpdated() {
-  const { lastUpdated } = useStore((store) => store);
+interface LastUpdatedProps {
+  lastUpdated: string | null;
+  variant?: Variant;
+}
+
+function LastUpdated({ lastUpdated, variant = 'body2' }: LastUpdatedProps) {
   const [, updateState] = useState({});
   const forceUpdate = useCallback(() => updateState({}), []);
 
@@ -14,10 +18,9 @@ function LastUpdated() {
     }, 1000 * 10);
     return () => clearInterval(interval);
   });
-  console.log('update');
+
   return (
-    <Typography variant='body1'>
-      Last update:{' '}
+    <Typography variant={variant}>
       {formatDistanceToNow(new Date(lastUpdated || 0), {
         addSuffix: true,
       })}

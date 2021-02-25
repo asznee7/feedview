@@ -9,8 +9,8 @@ import Typography from '@material-ui/core/Typography';
 import { red } from '@material-ui/core/colors';
 import SentimentSatisfiedIcon from '@material-ui/icons/SentimentSatisfied';
 import { NewsEntity } from '../types';
-import { formatDistanceToNow } from 'date-fns';
-import { getSentiment } from '../utils/getSentiment';
+import { colorMap, getSentiment } from '../utils/getSentiment';
+import LastUpdated from './LastUpdated';
 
 const useStyles = makeStyles((theme) => ({
   root: {
@@ -33,24 +33,27 @@ const useStyles = makeStyles((theme) => ({
   },
 }));
 
-interface RecipeReviewCardProps {
+interface NewsCardProps {
   newsItem: NewsEntity;
 }
 
-export default function RecipeReviewCard({ newsItem }: RecipeReviewCardProps) {
+export default function NewsCard({ newsItem }: NewsCardProps) {
   const classes = useStyles();
+
+  const sentiment = getSentiment(newsItem.sentiment?.score);
+  const sentmentColor = colorMap[sentiment];
 
   return (
     <Card className={classes.root}>
       <CardHeader
-        title={`${newsItem.source.name} - ${newsItem.author}`}
+        title={`${newsItem.source?.name || ''} - ${newsItem.author || ''}`}
         titleTypographyProps={{ variant: 'body2' }}
-        subheader={formatDistanceToNow(new Date(newsItem.publishedAt), {
-          addSuffix: true,
-        })}
+        subheader={<LastUpdated lastUpdated={newsItem.publishedAt}/>}
         subheaderTypographyProps={{ variant: 'body2' }}
       />
-      <CardMedia className={classes.media} image={newsItem.urlToImage} />
+      {newsItem.urlToImage && (
+        <CardMedia className={classes.media} image={newsItem.urlToImage} />
+      )}
       <CardContent>
         <Typography
           variant='h5'
@@ -65,9 +68,13 @@ export default function RecipeReviewCard({ newsItem }: RecipeReviewCardProps) {
         </Typography>
       </CardContent>
       <CardActions className={classes.footer}>
-        <SentimentSatisfiedIcon />
-        <Typography color='textPrimary' variant='body2'>
-          {getSentiment(newsItem.sentiment.score)}
+        <SentimentSatisfiedIcon htmlColor={sentmentColor} />
+        <Typography
+          color='textPrimary'
+          variant='body2'
+          style={{ color: sentmentColor }}
+        >
+          {`${sentiment} (${newsItem.sentiment?.score})`}
         </Typography>
       </CardActions>
     </Card>

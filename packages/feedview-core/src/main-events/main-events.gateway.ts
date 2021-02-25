@@ -1,3 +1,4 @@
+/* eslint-disable @typescript-eslint/ban-ts-comment */
 import { CACHE_MANAGER, Inject, Logger } from '@nestjs/common';
 import { Cache } from 'cache-manager';
 import {
@@ -6,19 +7,19 @@ import {
   SubscribeMessage,
   WebSocketGateway,
   WebSocketServer,
-  WsResponse,
 } from '@nestjs/websockets';
-import { from, interval, Observable } from 'rxjs';
-import { map } from 'rxjs/operators';
 import { Server } from 'socket.io';
 import { NewsService } from 'src/news/news.service';
-import { Cron, Interval, SchedulerRegistry, Timeout } from '@nestjs/schedule';
+import { SchedulerRegistry } from '@nestjs/schedule';
+import { TwitterService } from 'src/twitter/twitter.service';
+import { INewsResponseData } from 'src/news/interfaces/news.interface';
 
 @WebSocketGateway()
 export class MainEventsGateway {
   constructor(
     @Inject(CACHE_MANAGER) private cacheManager: Cache,
     @Inject(NewsService) private newsSerivce: NewsService,
+    @Inject(TwitterService) private twitterService: TwitterService,
     private schedulerRegistry: SchedulerRegistry,
   ) {}
 
@@ -29,107 +30,97 @@ export class MainEventsGateway {
 
   private clientQueries: { [id: string]: string } = {};
 
-  @SubscribeMessage('test')
-  findAll(@MessageBody() data: any): Observable<WsResponse<number>> {
-    return from([1, 2, 3]).pipe(
-      map((item) => ({ event: 'events', data: item })),
-    );
-  }
-
   @SubscribeMessage('query')
   async query(@MessageBody() data, @ConnectedSocket() client): Promise<void> {
-    // ): Promise<Observable<any>> {
     const clientId = client.id;
     this.clientQueries[clientId] = data;
-    // if (data) {
-    //   const cachedResponse = await this.cacheManager.get(data);
-    //   if (cachedResponse)
-    //     return from([1]).pipe(
-    //       map(() => ({ event: 'news', data: cachedResponse })),
-    //     );
-    // }
-    // // return null;
-    // return this.newsSerivce.getNews(data).pipe(
-    //   map((response) => {
-    //     if (response) {
-    //       this.cacheManager.set(data, response, { ttl: 60 * 10 });
-    //       console.log({ data: response });
-    //       return { event: 'news', data: response };
-    //     }
-    //   }),
-    // );
 
-    const nameInterval = `${client.id}_news`;
-    const interval = this.schedulerRegistry
-      .getIntervals()
-      .find((i) => i === nameInterval);
-
-    if (interval) {
-      clearInterval(this.schedulerRegistry.getInterval(nameInterval));
-    }
-
-    // client.send(JSON.stringify({ event: 'news', data: [] }));
-    // console.log('hello');
-    // this.server.to(client).emit(JSON.stringify({ event: 'news', data: [] }));
-
-    this.queryToClient(clientId);
-    const callback = () => {
-      this.queryToClient(clientId);
-    };
-
-    const newInterval = setInterval(callback, 60 * 10 * 1000);
-    this.schedulerRegistry.addInterval(nameInterval, newInterval);
+    this.clearIntervals(clientId);
+    this.setIntervals(clientId);
   }
 
-  // @Interval(3000)
-  async queryToClient(clientId) {
-    // eslint-disable-next-line @typescript-eslint/ban-ts-comment
+  async sendPosts(clientId: string, type: 'twitter' | 'news') {
     // @ts-ignore
     const client: WebSocket = Array.from(this.server.clients).find(
-      // eslint-disable-next-line @typescript-eslint/ban-ts-comment
       // @ts-ignore
       (v) => v.id === clientId,
     );
 
-    const data = this.clientQueries[clientId];
+    const query = this.clientQueries[clientId];
 
-    const cachedResponse = await this.cacheManager.get(data);
-    if (data && cachedResponse) {
-      client.send(JSON.stringify({ event: 'news', data: cachedResponse }));
+    const cacheKey = `${type}__${query}`;
+
+    const cachedResponse: INewsResponseData = await this.cacheManager.get(
+      cacheKey,
+    );
+
+    if (query && cachedResponse && cachedResponse[type]) {
+      client.send(JSON.stringify({ event: type, data: cachedResponse[type] }));
     }
 
-    this.newsSerivce.getNews(data).subscribe((response) => {
+    const sendData = (response) => {
+      const ttl = type === 'twitter' ? 5 : 60 * 10;
+
       if (response) {
-        this.cacheManager.set(data, response, { ttl: 60 * 10 });
-        client.send(JSON.stringify({ event: 'news', data: response }));
+        this.cacheManager.set(cacheKey, response, { ttl });
+        client.send(JSON.stringify({ event: type, data: response }));
       }
-    });
+
+      return response;
+    };
+
+    if (type === 'news') {
+      this.newsSerivce.getNews(query).subscribe(sendData);
+    }
+
+    if (type === 'twitter') {
+      this.twitterService.getTweets(query).subscribe(sendData);
+    }
   }
 
-  async afterInit(server: Server) {
-    this.logger.log('Init');
-    console.log(await this.cacheManager.get('key'));
+  clearIntervals(clientId: string) {
+    const newsIntervalKey = `${clientId}_news`;
+    const twitterIntervalKey = `${clientId}_twitter`;
 
-    // // await this.cacheManager.set('asd', 'asdasd');
+    const intervals = this.schedulerRegistry.getIntervals();
 
-    // this.cacheManager.get('key', (err, result) => {
-    //   console.log(result);
-    //   // >> 'bar'
-    //   this.cacheManager.del('foo', (err) => {});
-    // });
+    if (intervals.includes(newsIntervalKey)) {
+      clearInterval(this.schedulerRegistry.getInterval(newsIntervalKey));
+    }
+
+    if (intervals.includes(twitterIntervalKey)) {
+      clearInterval(this.schedulerRegistry.getInterval(twitterIntervalKey));
+    }
+  }
+
+  setIntervals(clientId: string) {
+    const newsCallback = () => {
+      this.logger.log(`News sent to client: ${clientId}`);
+      this.sendPosts(clientId, 'news');
+    };
+
+    const twitterCallback = () => {
+      this.logger.log(`Tweets sent to client: ${clientId}`);
+      this.sendPosts(clientId, 'twitter');
+    };
+
+    newsCallback();
+    twitterCallback();
+
+    const newsInterval = setInterval(newsCallback, 30 * 60 * 1000);
+    const twitterInterval = setInterval(twitterCallback, 10 * 60 * 1000);
+
+    const newsIntervalKey = `${clientId}_news`;
+    const twitterIntervalKey = `${clientId}_twitter`;
+
+    this.schedulerRegistry.addInterval(newsIntervalKey, newsInterval);
+    this.schedulerRegistry.addInterval(twitterIntervalKey, twitterInterval);
   }
 
   handleDisconnect(client: any, ...args: any[]) {
+    this.clearIntervals(client.id);
+
     this.logger.log(`Client disconnected: ${client.id}`);
-
-    const nameInterval = `${client.id}_news`;
-    const interval = this.schedulerRegistry
-      .getIntervals()
-      .find((i) => i === nameInterval);
-
-    if (interval) {
-      clearInterval(this.schedulerRegistry.getInterval(nameInterval));
-    }
   }
 
   handleConnection(client: WebSocket, ...args: any[]) {
@@ -137,6 +128,7 @@ export class MainEventsGateway {
     // eslint-disable-next-line @typescript-eslint/ban-ts-comment
     // @ts-ignore
     client.id = clientKey;
+
     this.logger.log(`Client connected: ${clientKey}`);
   }
 }

@@ -10,7 +10,7 @@ export default function useSocket(): IUseSocket {
   const [isOpen, setIsOpen] = useState<boolean>(false);
   const ws = useRef<WebSocket | null>(null);
 
-  const { setNews } = useStore((store) => store);
+  const { setNews, setTweets } = useStore((store) => store);
 
   function sendQuery(query: string) {
     if (isOpen && ws.current?.OPEN) {
@@ -51,12 +51,17 @@ export default function useSocket(): IUseSocket {
           setNews(message.data);
           break;
         }
+        case 'twitter': {
+          console.log(message.data);
+          setTweets(message.data);
+          break;
+        }
         default: {
           console.log('uknown message');
         }
       }
     };
-  }, [isOpen, setNews]);
+  }, [isOpen, setNews, setTweets]);
 
   return { sendQuery };
 }
