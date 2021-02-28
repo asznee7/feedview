@@ -36,13 +36,22 @@
   margin-right: 1em !important;
 }
 
-.newsContainer {
-  display: flex;
-  flex-direction: row;
-  flex-wrap: wrap;
-}
-
 .content {
   display: grid;
-  grid-template-columns: 1fr 1fr 1fr;
+  grid-template-columns: 2fr 1fr;
+}
+
+.container {
+  max-width: 1200px;
+  margin: 0 auto;
+}
+
+.info-post {
+  display: flex;
+  flex-direction: column;
+}
+
+.newsContainer {
+  max-width: 100%;
+  padding: 0 15px 0 0;
 }
