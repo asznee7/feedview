@@ -6,14 +6,19 @@ import {
   ThemeProvider,
   CssBaseline,
   createMuiTheme,
+  Grid,
 } from "@material-ui/core";
 import useStore from "./core/useStore";
 import Card from "./components/NewsCard";
 import { compareDesc } from "date-fns";
 import TweetCard from "./components/TweetCard";
-import GlobalStats from "./components/GlobalStats";
+// import GlobalStats from "./components/GlobalStats";
 import Header from "./components/Header";
 import Flickity from "react-flickity-component";
+import { Twitter } from "@material-ui/icons";
+import DateRangeOutlinedIcon from "@material-ui/icons/DateRangeOutlined";
+import BeachAccessIcon from "@material-ui/icons/BeachAccess";
+import { BsNewspaper } from "react-icons/bs";
 
 import "flickity/css/flickity.css";
 
@@ -27,6 +32,69 @@ function App() {
       <CssBaseline />
       <div className="app">
         <Header />
+        <div className="gridWrapper container">
+          <Box className="gridTitle" mb={4}>
+            <Typography variant="h5">Global stats</Typography>
+          </Box>
+
+          <Grid container spacing={3}>
+            <Grid item xs>
+              <div className="infoCard">
+                <div className="infoCard-header">
+                  <div className="infoCard-logo newsArticles">
+                    <BsNewspaper size="2em" />
+                  </div>
+                  <h3 className="infoCard-name">News articles</h3>
+                </div>
+                <div className="infoCard-content">
+                  <p>Articles found</p>
+                  <p>Sentiment</p>
+                  <div className="infoCard-footer">
+                    <DateRangeOutlinedIcon />
+                    Last update
+                  </div>
+                </div>
+              </div>
+            </Grid>
+            <Grid item xs>
+              <div className="infoCard">
+                <div className="infoCard-header">
+                  <div className="infoCard-logo twitter">
+                    <Twitter fontSize="large" />
+                  </div>
+                  <h3 className="infoCard-name">Twitter</h3>
+                </div>
+                <div className="infoCard-content">
+                  <p>Posts found</p>
+                  <p>Sentiment</p>
+                  <p>Engagement</p>
+                  <div className="infoCard-footer">
+                    <DateRangeOutlinedIcon />
+                    Last update
+                  </div>
+                </div>
+              </div>
+            </Grid>
+            <Grid item xs>
+              <div className="infoCard">
+                <div className="infoCard-header">
+                  <div className="infoCard-logo total">
+                    <BeachAccessIcon fontSize="large" />
+                  </div>
+                  <h3 className="infoCard-name">Total</h3>
+                </div>
+                <div className="infoCard-content">
+                  <p>Sentiment</p>
+                  <div className="infoCard-footer">
+                    <DateRangeOutlinedIcon />
+                    Last update
+                  </div>
+                </div>
+              </div>
+            </Grid>
+          </Grid>
+        </div>
+
         <div className="main">
           <div className="content container">
             <div className="info-post">
@@ -37,9 +105,9 @@ function App() {
                 <div className="postContainer">
                   <Flickity
                     options={{
-                      groupCells: true,
                       wrapAround: true,
-                      autoPlay: true,
+                      autoPlay: 2000,
+                      cellAlign: "left",
                     }} // takes flickity options {}
                     disableImagesLoaded={false} // default false
                   >
@@ -66,9 +134,9 @@ function App() {
                 <div className="newsContainer">
                   <Flickity
                     options={{
-                      groupCells: true,
                       wrapAround: true,
-                      autoPlay: true,
+                      autoPlay: 3000,
+                      cellAlign: "left",
                     }} // takes flickity options {}
                     disableImagesLoaded={false} // default false
                   >
@@ -87,12 +155,12 @@ function App() {
                 </div>
               </div>
             </div>
-            <div className="globalStatsContainer">
+            {/* <div className="globalStatsContainer">
               <Box mb={2}>
                 <Typography variant="h5">Global stats</Typography>
               </Box>
               <GlobalStats articles={news} tweets={tweets} />
-            </div>
+            </div> */}
           </div>
         </div>
       </div>
