@@ -13,6 +13,7 @@ import { compareDesc } from 'date-fns';
 import TweetCard from './components/TweetCard';
 import GlobalStats from './components/GlobalStats';
 import Header from './components/Header';
+import SentimentChart from './components/SentimentChart';
 
 const theme = createMuiTheme({});
 
@@ -64,6 +65,7 @@ function App() {
                 <Typography variant='h5'>Global stats</Typography>
               </Box>
               <GlobalStats articles={news} tweets={tweets} />
+              <SentimentChart />
             </div>
           </div>
         </div>

@@ -1,7 +1,14 @@
 {
   "name": "root",
   "private": true,
+  "workspaces": [
+    "packages/*"
+  ],
   "devDependencies": {
     "lerna": "^3.22.1"
+  },
+  "scripts": {
+    "fe:start": "yarn workspace feedview-client-core run start",
+    "be:start": "yarn workspace feedview-core run start:dev"
   }
 }
