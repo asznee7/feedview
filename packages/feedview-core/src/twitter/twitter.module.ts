@@ -18,6 +18,7 @@ import { TwitterService } from './twitter.service';
           params: {
             'user.fields': 'name,username',
             expansions: 'author_id',
+            max_results: 100,
             'tweet.fields': 'created_at,public_metrics',
             'media.fields': 'preview_image_url,url',
           },

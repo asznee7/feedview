@@ -1,12 +1,9 @@
 import React from 'react';
 import { makeStyles } from '@material-ui/core/styles';
-import List from '@material-ui/core/List';
-import ListItem from '@material-ui/core/ListItem';
+import Box from '@material-ui/core/Box';
 import ListItemText from '@material-ui/core/ListItemText';
-import ListItemAvatar from '@material-ui/core/ListItemAvatar';
 import Avatar from '@material-ui/core/Avatar';
 import BeachAccessIcon from '@material-ui/icons/BeachAccess';
-import Divider from '@material-ui/core/Divider';
 import { Card } from '@material-ui/core/';
 import { Twitter } from '@material-ui/icons';
 import { BsNewspaper } from 'react-icons/bs';
@@ -22,8 +19,15 @@ import useStore from '../core/useStore';
 const useStyles = makeStyles((theme) => ({
   root: {
     width: '100%',
-    maxWidth: 360,
     backgroundColor: theme.palette.background.paper,
+    display: 'flex',
+    justifyContent: 'space-between',
+  },
+  block: {
+    flexBasis: '30%',
+    display: 'flex',
+    flexDirection: 'column',
+    padding: '1em',
   },
 }));
 
@@ -38,82 +42,78 @@ function GlobalStats({ articles, tweets }: GlobalStatsProps) {
 
   return (
     <Card>
-      <div>
-        <List className={classes.root}>
-          <ListItem>
-            <ListItemAvatar>
-              <Avatar>
-                <BsNewspaper />
-              </Avatar>
-            </ListItemAvatar>
+      <Box className={classes.root}>
+        <Box className={classes.block}>
+          <Box>
+            <Avatar>
+              <BsNewspaper />
+            </Avatar>
             <ListItemText primary='News articles' />
-          </ListItem>
-          <ListItem>
+          </Box>
+          <Box>
             <ListItemText
               primary={
                 <LastUpdated lastUpdated={lastUpdatedNews} variant='body1' />
               }
               secondary='Last update'
             />
-          </ListItem>
-          <ListItem>
+          </Box>
+          <Box>
             <ListItemText
               primary={articles.length}
               secondary='Articles found'
             />
-          </ListItem>
-          <ListItem>
+          </Box>
+          <Box>
             <ListItemText
               primary={`${getTotalSentiment(articles)} (${getAverageSentiment(
                 articles,
               )})`}
               secondary='Sentiment'
             />
-          </ListItem>
-          <Divider variant='inset' component='li' />
-          <ListItem>
-            <ListItemAvatar>
-              <Avatar>
-                <Twitter />
-              </Avatar>
-            </ListItemAvatar>
+          </Box>
+        </Box>
+        <Box className={classes.block}>
+          <Box>
+            <Avatar>
+              <Twitter />
+            </Avatar>
             <ListItemText primary='Twitter' />
-          </ListItem>
-          <ListItem>
+          </Box>
+          <Box>
             <ListItemText
               primary={
                 <LastUpdated lastUpdated={lastUpdatedTwitter} variant='body1' />
               }
               secondary='Last update'
             />
-          </ListItem>
-          <ListItem>
+          </Box>
+          <Box>
             <ListItemText primary={tweets.length} secondary='Posts found' />
-          </ListItem>
-          <ListItem>
+          </Box>
+          <Box>
             <ListItemText
               primary={`${getTotalSentiment(tweets)} (${getAverageSentiment(
                 tweets,
               )})`}
               secondary='Sentiment'
             />
-          </ListItem>
-          <ListItem>
+          </Box>
+          <Box>
             <ListItemText
               primary={getAverageEngagement(tweets)}
               secondary='Engagement'
             />
-          </ListItem>
-          <Divider variant='inset' component='li' />
-          <ListItem>
-            <ListItemAvatar>
-              <Avatar>
-                <BeachAccessIcon />
-              </Avatar>
-            </ListItemAvatar>
+          </Box>
+        </Box>
+        <Box className={classes.block}>
+          <Box>
+            <Avatar>
+              <BeachAccessIcon />
+            </Avatar>
             <ListItemText primary='Total' />
-          </ListItem>
-          <ListItem>
+          </Box>
+          <Box>
             <ListItemText
               primary={`${getTotalSentiment([
                 ...tweets,
@@ -121,9 +121,9 @@ function GlobalStats({ articles, tweets }: GlobalStatsProps) {
               ])} (${getAverageSentiment([...tweets, ...articles])})`}
               secondary='Sentiment'
             />
-          </ListItem>
-        </List>
-      </div>
+          </Box>
+        </Box>
+      </Box>
     </Card>
   );
 }

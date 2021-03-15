@@ -19,10 +19,11 @@ export class NewsService {
 
     const withSentiment = newsObs.pipe(
       map((newsArticles) => {
+        console.log('newsArticles: ', newsArticles);
         if (Array.isArray(newsArticles)) {
           return newsArticles.map((a) => ({
             ...a,
-            sentiment: getSentiment(a.description),
+            sentiment: getSentiment(a.description || ''),
           }));
         }
 

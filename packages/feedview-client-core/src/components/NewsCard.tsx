@@ -48,8 +48,10 @@ export default function NewsCard({ newsItem }: NewsCardProps) {
       <CardHeader
         title={`${newsItem.source?.name || ''} - ${newsItem.author || ''}`}
         titleTypographyProps={{ variant: 'body2' }}
-        subheader={<LastUpdated lastUpdated={newsItem.publishedAt}/>}
+        subheader={<LastUpdated lastUpdated={newsItem.publishedAt} />}
         subheaderTypographyProps={{ variant: 'body2' }}
+        onClick={() => window.open(newsItem.url, '_blank')}
+        style={{ cursor: 'pointer' }}
       />
       {newsItem.urlToImage && (
         <CardMedia className={classes.media} image={newsItem.urlToImage} />
